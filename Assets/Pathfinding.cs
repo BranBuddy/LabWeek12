@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public class Pathfinding : MonoBehaviour
@@ -76,30 +77,63 @@ public class Pathfinding : MonoBehaviour
 
         
     }
-
-    /// Mark the given cell as an obstacle at runtime and recompute the path.
-    /// Returns true when the obstacle was added and path recalculated and false if out of bounds or start/goal.
     public bool AddObstacle(Vector2Int position)
     {
         if (!IsInBounds(position))
         {
+            Debug.Log("AddObstacle: position out of bounds");
             return false;
         }
+
         // Don't place an obstacle on the start or goal
         if (position == start || position == goal)
         {
+            Debug.Log("AddObstacle: cannot place on start or goal");
+            return false;
+        }
+
+        // Makes it so an obstacle wont place on an existing one
+        if (grid[position.y, position.x] == 1)
+        {
+            Debug.Log($"AddObstacle: cell ({position.x},{position.y}) is already an obstacle.");
             return false;
         }
 
         grid[position.y, position.x] = 1;
-
+        FindPath(start, goal);
         return true;
     }
 
+    [ContextMenu("Generate Grid")]
+    private void ContextRegenerateGrid()
+    {
+        // Generates a new grid
+        clickToGenerate = false;
+    }
+
+    [ContextMenu("Clear Grid")]
+    private void ContextClearGrid()
+    {
+        for (int y = 0; y < grid.GetLength(0); y++)
+            for (int x = 0; x < grid.GetLength(1); x++)
+                grid[y, x] = 0;
+
+        clickToGenerate = true; // treat as generated so GenerateRandomGrid won't overwrite
+        FindPath(start, goal);
+    }
+
+    [ContextMenu("Add Random obstacle")]
+    private void ContextAddExampleObstacle()
+    {
+        AddObstacle(new Vector2Int(Random.Range(0, 4), Random.Range(0, 4)));
+        
+    }
+
+
     private void OnDrawGizmos()
     {
-        FindPath(start, goal);
         GenerateRandomGrid(10, 10, probabilityForObstacles);
+        FindPath(start, goal);
     }
 
     private bool IsInBounds(Vector2Int point)
