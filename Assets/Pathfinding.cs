@@ -11,6 +11,8 @@ public class Pathfinding : MonoBehaviour
     private Vector2Int current;
     [SerializeField] private bool clickToGenerate = false;
     [SerializeField] private float probabilityForObstacles;
+    [SerializeField] private Transform startMarker;
+    [SerializeField] private Transform goalMarker;
 
     private Vector2Int[] directions = new Vector2Int[]
     {
@@ -129,23 +131,21 @@ public class Pathfinding : MonoBehaviour
         
     }
 
-    private void RandomizeStartAndGoal()
+    private void MoveStartAndGoal()
     {
-        do
-        {
-            start = new Vector2Int(Random.Range(0, grid.GetLength(1)), Random.Range(0, grid.GetLength(0)));
-        } while (grid[start.y, start.x] == 1);
+        if (startMarker != null)
+            start = new Vector2Int(Mathf.RoundToInt(startMarker.position.x / 10f), Mathf.RoundToInt(startMarker.position.z / 10f));
 
-        do
-        {
-            goal = new Vector2Int(Random.Range(0, grid.GetLength(1)), Random.Range(0, grid.GetLength(0)));
-        } while (goal == start || grid[goal.y, goal.x] == 1);
+        if (goalMarker != null)
+            goal = new Vector2Int(Mathf.RoundToInt(goalMarker.position.x / 10f), Mathf.RoundToInt(goalMarker.position.z / 10f));
+
+        FindPath(start, goal);
     }
 
     private void OnDrawGizmos()
     {
         GenerateRandomGrid(10, 10, probabilityForObstacles);
-        RandomizeStartAndGoal();
+        MoveStartAndGoal();
         FindPath(start, goal);
     }
 
