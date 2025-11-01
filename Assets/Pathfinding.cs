@@ -129,10 +129,23 @@ public class Pathfinding : MonoBehaviour
         
     }
 
+    private void RandomizeStartAndGoal()
+    {
+        do
+        {
+            start = new Vector2Int(Random.Range(0, grid.GetLength(1)), Random.Range(0, grid.GetLength(0)));
+        } while (grid[start.y, start.x] == 1);
+
+        do
+        {
+            goal = new Vector2Int(Random.Range(0, grid.GetLength(1)), Random.Range(0, grid.GetLength(0)));
+        } while (goal == start || grid[goal.y, goal.x] == 1);
+    }
 
     private void OnDrawGizmos()
     {
         GenerateRandomGrid(10, 10, probabilityForObstacles);
+        RandomizeStartAndGoal();
         FindPath(start, goal);
     }
 
