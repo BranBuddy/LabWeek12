@@ -139,7 +139,6 @@ public class Pathfinding : MonoBehaviour
         if (goalMarker != null)
             goal = new Vector2Int(Mathf.RoundToInt(goalMarker.position.x / 10f), Mathf.RoundToInt(goalMarker.position.z / 10f));
 
-        FindPath(start, goal);
     }
 
     private void OnDrawGizmos()
